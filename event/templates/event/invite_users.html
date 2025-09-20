@@ -1,0 +1,53 @@
+{% extends 'event/base.html' %}
+{% block title %}Send Invitations{% endblock %}
+
+{% block body %}
+<h4>
+  Type <strong>yes</strong> beside username to send invitations for the event:
+  <strong>{{ event.name }}</strong>, else type <strong>no</strong>.
+</h4>
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-12 col-md-7">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3>Send Invitations</h3>
+        </div>
+        <div class="panel-body">
+          {% if error_message %}
+            <p><strong class="text-danger">{{ error_message }}</strong></p>
+          {% endif %}
+
+          <form class="form-horizontal" role="form"
+                action="{% url 'event:send_invites' event.id %}"
+                method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            {% for user in users %}
+              <div class="form-group">
+                <label class="col-sm-4 control-label">
+                  {{ user.first_name }} {{ user.last_name }}
+                </label>
+                <div class="col-sm-8">
+                  <input type="text" name="{{ user.username }}" class="form-control"
+                         placeholder="yes / no">
+                </div>
+              </div>
+            {% endfor %}
+
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-success">
+                  Send Invitations
+                </button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

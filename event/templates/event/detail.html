@@ -1,0 +1,114 @@
+{% extends 'event/base.html' %}
+{% load static %}
+{% block title %}{{ event.name }}{% endblock %}
+{% block events_active %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid events-container">
+
+  <div class="row">
+
+    <!-- Left Column -->
+    <div class="col-sm-4 col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          {% if event.image %}
+            <img src="{{ event.image.url }}" class="img-responsive" alt="{{ event.name }}">
+          {% else %}
+            <img src="{% static 'event/images/default_event.jpg' %}" class="img-responsive" alt="Event Image">
+          {% endif %}
+          <h1>{{ event.name }}</h1>
+          <h4>{{ event.location }}</h4>
+          <h2>{{ event.manager.first_name }}</h2>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      {% if event.manager.id == request.user.id %}
+        <!-- Update Event -->
+        <form action="{% url 'event:update_event' event.id %}" method="get" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="event_id" value="{{ event.id }}">
+          <button type="submit" class="btn btn-default btn-block">
+            <span class="glyphicon glyphicon-edit"></span>
+            <strong> Update Event Details</strong>
+          </button>
+        </form>
+        <br>
+
+        <!-- Send Invitations -->
+        <form action="{% url 'event:invite_users' event.id %}" method="post" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="event_id" value="{{ event.id }}">
+          <button type="submit" class="btn btn-default btn-block">
+            <span class="glyphicon glyphicon-envelope"></span>
+            <strong> Send Invitations</strong>
+          </button>
+        </form>
+      {% else %}
+        <!-- Buy Ticket -->
+        <form action="{% url 'event:buy_ticket' event.id %}" method="get" style="display:inline;">
+          {% csrf_token %}
+          <input type="hidden" name="event_id" value="{{ event.id }}">
+          <button type="submit" class="btn btn-default btn-block">
+            <span class="glyphicon glyphicon-usd"></span>
+            <strong> Buy Ticket</strong>
+          </button>
+        </form>
+      {% endif %}
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-sm-8 col-md-9">
+
+      <!-- Event Details -->
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          {{ event.name }}
+        </div>
+        <div class="panel-body">
+          <h3>Location: {{ event.location }}</h3>
+          <h4>Date: {{ event.date }}</h4>
+          <h4>Time: {{ event.time }}</h4>
+          <h4>Fare: Rs. {{ event.fare }}/-</h4>
+          <h4>
+            Manager’s Profile:
+            <a href="{% url 'event:user_profile' event.manager.id %}">
+              {{ event.manager.first_name }}
+            </a>
+          </h4>
+        </div>
+      </div>
+
+      <!-- Attendees & Invitees -->
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          {{ event.name }}'s Attendees and Invitees
+        </div>
+        <div class="panel-body">
+          {% if tickets %}
+            {% for ticket in tickets %}
+              <h4>
+                User Name: {{ ticket.attendee.first_name }} {{ ticket.attendee.last_name }}
+              </h4>
+              <h4>
+                Type:
+                {% if ticket.flag %}
+                  Ticket
+                {% else %}
+                  Invitation
+                {% endif %}
+              </h4>
+              <br>
+            {% endfor %}
+          {% else %}
+            <p>No attendees yet.</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}EventManager{% endblock %}</title>
+    {% load static %}
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css?family=Satisfy" rel="stylesheet" type="text/css">
+    
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'event/css/style.css' %}"/>
+
+    <!-- JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="{% static 'event/js/main.js' %}"></script>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-inverse navbar-fixed-top" style="box-sizing:border-box; position:relative;">
+        <div class="container-fluid">
+            
+            <!-- Navbar Header -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#topNavBar">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="{% url 'event:home' %}">Online Event Management</a>
+            </div>
+            
+            <!-- Navbar Links -->
+            <div class="collapse navbar-collapse" id="topNavBar">
+                <ul class="nav navbar-nav">
+                    <li class="{% block register_active %}{% endblock %}">
+                        <a href="{% url 'event:register' %}">Register</a>
+                    </li>
+                    <li class="{% block login_active %}{% endblock %}">
+                        <a href="{% url 'event:login_user' %}">Log In</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Page Content -->
+    <main class="error-content">
+        <div class="panel panel-danger error-panel">
+            <div class="panel-body text-center">
+                {% block content %}{% endblock %}
+            </div>
+        </div>
+    </main>
+    <footer class="footer">
+        &copy; {{ year|default:2025 }} Event Management System
+    </footer>
+</body>
+</html>

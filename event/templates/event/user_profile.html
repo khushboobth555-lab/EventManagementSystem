@@ -1,0 +1,75 @@
+{% extends 'event/base.html' %}
+{% load static %}
+{% block title %}Profile{% endblock %}
+{% block profile_active %}active{% endblock %}
+
+{% block body %}
+<div class="container-fluid events-container">
+
+  <div class="row">
+
+    <!-- Left Column -->
+    <div class="col-sm-4 col-md-3">
+      <div class="panel panel-default">
+        <div class="panel-body text-center">
+          {% if profile.image %}
+            <img src="{{ profile.image.url }}" class="img-responsive" alt="Profile Picture">
+          {% else %}
+            <img src="{% static 'event/images/default_profile.png' %}" class="img-responsive" alt="Default Profile">
+          {% endif %}
+          <br>
+          <h1>{{ user.last_name }},</h1>
+          <h2>{{ user.first_name }}</h2>
+          <h2>{{ user.username }}</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-sm-8 col-md-9">
+
+      <!-- Profile Info -->
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          {{ user.first_name }} {{ user.last_name }}
+        </div>
+        <div class="panel-body">
+          <h4>Bio: {{ profile.bio }}</h4>
+          <h4>Age: {{ profile.age }}</h4>
+          <h4>DoB: {{ profile.birth_date }}</h4>
+          <h4>Address: {{ profile.location }}</h4>
+          <h4>Wallet Balance: {{ profile.wallet_balance }}</h4>
+        </div>
+      </div>
+
+      <!-- Tickets & Invitations -->
+      <div class="panel panel-info">
+        <div class="panel-heading">
+          {{ user.first_name }}’s Tickets & Invitations
+        </div>
+        <div class="panel-body">
+          {% if tickets %}
+            {% for ticket in tickets %}
+              <h4>Event: {{ ticket.event.name }}</h4>
+              <h4>
+                Type:
+                {% if ticket.flag %}
+                  Ticket
+                {% else %}
+                  Invitation
+                {% endif %}
+              </h4>
+              <br>
+            {% endfor %}
+          {% else %}
+            <p>No tickets or invitations yet.</p>
+          {% endif %}
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}
