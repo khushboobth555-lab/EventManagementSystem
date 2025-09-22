@@ -1,6 +1,11 @@
-def custom_404_view(request, exception=None):
-    return render(request, '404.html', status=404)
-from django.shortcuts import render, get_object_or_404
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth import update_session_auth_hash
+
+
+from django.contrib import messages
+
+
+from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
 from django.views.generic.edit import UpdateView
@@ -11,10 +16,12 @@ import datetime
 import json
 
 from .models import Event, Profile, Ticket
-from .forms import EventForm, UserForm, ProfileForm, AddMoneyForm, WithdrawMoneyForm, BuyTicketForm
+from .forms import EventForm, UserForm, UpdateUserForm,ProfileForm ,UpdateProfileForm,AddMoneyForm, WithdrawMoneyForm, BuyTicketForm
 
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
 
+def custom_404_view(request, exception=None):
+    return render(request, '404.html', status=404)
 
 def home(request):
     if not request.user.is_authenticated:
@@ -35,7 +42,7 @@ def home(request):
 
 
 def register(request):
-    register_form = UserForm(request.POST or None, prefix="register")
+    register_form = UserForm(request.POST or None, prefix="user")
     profile_form = ProfileForm(request.POST or None, request.FILES or None, prefix="profile")
     if register_form.is_valid() and profile_form.is_valid():
         user = register_form.save(commit=False)
@@ -78,11 +85,53 @@ def login_user(request):
         if user:
             if user.is_active:
                 login(request, user)
-                events = Event.objects.all()
-                return render(request, 'event/home.html', {'events': events, 'user': user})
+                return redirect('event:home')
             return render(request, 'event/login.html', {'error_message': 'Your account has been disabled'})
         return render(request, 'event/login.html', {'error_message': 'Invalid login'})
     return render(request, 'event/login.html')
+
+
+def get_user_profile(request, pk=None):
+    if not request.user.is_authenticated:
+        return redirect('event:login_user')
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
+    tickets = Ticket.objects.filter(attendee=user)
+    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile, 'tickets': tickets})
+
+def update_profile(request):
+    if not request.user.is_authenticated:
+        return redirect('event:login_user')
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
+
+    if request.method == 'POST':
+        user_form = UpdateUserForm(request.POST, instance=user, prefix="user")
+        profile_form = UpdateProfileForm(request.POST, request.FILES, instance=profile, prefix="profile")
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile.image = profile_form.cleaned_data['image']
+
+            file_type = profile.image.url.split('.')[-1].lower()
+            if file_type not in IMAGE_FILE_TYPES:
+                context = {
+                    'user_form': user_form,
+                    'profile_form': profile_form,
+                    'error_message': 'Image file must be PNG, JPG, or JPEG',
+                 }
+                return render(request, 'event/update_profile.html', context)
+
+            profile_form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('event:user_profile')
+    else:
+        user_form = UpdateUserForm(instance=user, prefix="user")
+        profile_form = UpdateProfileForm(instance=profile, prefix="profile")
+
+    return render(request, 'event/update_profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form
+    })
 
 
 def logout_user(request):
@@ -134,23 +183,16 @@ class EventUpdate(UpdateView):
         })
 
 
-def get_user_profile(request, pk):
-    user = get_object_or_404(User,pk=pk)
-    profile = get_object_or_404(Profile, user_id=pk)
-    
-    #profile = Profile.objects.get(user_id=pk)
-    tickets = Ticket.objects.filter(attendee=user)
-    return render(request, 'event/user_profile.html', {'user': user, 'profile': profile, 'tickets': tickets})
-
-
 def get_past_events(request):
     events = Event.objects.filter(date__lt=date.today())
     return render(request, 'event/get_past_events.html', {'events': events})
 
 
-def add_money(request, pk):
-    user = get_object_or_404(User,pk=request.user.id)
-    profile = get_object_or_404(Profile, user_id=pk)
+def add_money(request):
+    if not request.user.is_authenticated:
+        return redirect('event:login_user')
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
     if request.method == 'POST':
         form = AddMoneyForm(request.POST)
         if form.is_valid():
@@ -169,9 +211,11 @@ def add_money(request, pk):
     return render(request, 'event/add_money.html', {'profile': profile, 'form': form})
 
 
-def withdraw_money(request, pk):
-    user = get_object_or_404(User,pk=request.user.id)
-    profile = get_object_or_404(Profile, user_id=pk)
+def withdraw_money(request):
+    if not request.user.is_authenticated:
+        return redirect('event:login_user')
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
     if request.method == 'POST':
         form = WithdrawMoneyForm(request.POST)
         if form.is_valid():
@@ -280,3 +324,60 @@ def custom_page_not_found(request, exception=None):
 
 def custom_server_error(request):
     return render(request, "500.html", status=500)
+
+# Change Password View
+def change_password(request):
+    if not request.user.is_authenticated:
+        return redirect('event:login_user')
+    error_message = None
+    if request.method == 'POST':
+        old_password = request.POST.get('old_password')
+        new_password1 = request.POST.get('new_password1')
+        new_password2 = request.POST.get('new_password2')
+        user = request.user
+        if not user.check_password(old_password):
+            error_message = 'Current password is incorrect.'
+        elif new_password1 != new_password2:
+            error_message = 'New passwords do not match.'
+        elif not new_password1 or len(new_password1) < 6:
+            error_message = 'New password must be at least 6 characters.'
+        else:
+            user.set_password(new_password1)
+            user.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Password changed successfully.')
+            return redirect('event:user_profile')
+    return render(request, 'event/change_password.html', {'error_message': error_message})
+# Change Wallet Pin View
+# Change Wallet Pin View
+def change_wallet_pin(request):
+    if not request.user.is_authenticated:
+        return redirect('event:login_user')
+    error_message = None
+    user = request.user
+    profile = get_object_or_404(Profile, user=user)
+    if request.method == 'POST':
+        old_pin = request.POST.get('old_pin')
+        new_pin1 = request.POST.get('new_pin1')
+        new_pin2 = request.POST.get('new_pin2')
+        # Validate pins as strings before converting to int
+        if not (old_pin and new_pin1 and new_pin2):
+            error_message = 'All pin fields are required.'
+        elif not (str(old_pin).isdigit() and str(new_pin1).isdigit() and str(new_pin2).isdigit()):
+            error_message = 'Pins must be numeric.'
+        elif not (len(str(new_pin1)) == 4 and len(str(new_pin2)) == 4):
+            error_message = 'Pin must be a 4-digit number.'
+        else:
+            old_pin_int = int(old_pin)
+            new_pin1_int = int(new_pin1)
+            new_pin2_int = int(new_pin2)
+            if old_pin_int != profile.wallet_pin:
+                error_message = 'Current pin is incorrect.'
+            elif new_pin1_int != new_pin2_int:
+                error_message = 'New pins do not match.'
+            else:
+                profile.wallet_pin = new_pin1_int
+                profile.save()
+                messages.success(request, 'Wallet pin changed successfully.')
+                return redirect('event:user_profile')           
+    return render(request, 'event/change_wallet_pin.html', {'error_message': error_message})

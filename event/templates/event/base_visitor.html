@@ -19,38 +19,32 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
     <script src="{% static 'event/js/main.js' %}"></script>
 </head>
-<body>
+<body style="display:flex; flex-direction:column; min-height:100vh;">
     <!-- Navbar -->
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="box-sizing:border-box; position:relative;">
-        <div class="container-fluid">
-            
-            <!-- Navbar Header -->
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#topNavBar">
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="{% url 'event:home' %}">Online Event Management</a>
-            </div>
-            
-            <!-- Navbar Links -->
-            <div class="collapse navbar-collapse" id="topNavBar">
-                <ul class="nav navbar-nav">
-                    <li class="{% block register_active %}{% endblock %}">
-                        <a href="{% url 'event:register' %}">Register</a>
-                    </li>
-                    <li class="{% block login_active %}{% endblock %}">
-                        <a href="{% url 'event:login_user' %}">Log In</a>
-                    </li>
-                </ul>
+    <nav class="navbar navbar-inverse navbar-fixed-top event-header-navbar">
+        <div class="container-fluid event-header-container">
+            <div class="event-header-flex">
+                <div class="event-header-brand">
+                    <a class="navbar-brand event-header-title" href="{% url 'event:home' %}">
+                        <span class="glyphicon glyphicon-glass" style="margin-right:8px;"></span>
+                        Online Event Management
+                    </a>
+                </div>
+                <div class="event-header-user" style="margin-left:auto;">
+                    <ul class="nav navbar-nav navbar-right event-header-user-nav">
+                        <li class="{% block register_active %}{% endblock %}"><a href="{% url 'event:register' %}"><span class="glyphicon glyphicon-user"></span> Register</a></li>
+                        <li class="{% block login_active %}{% endblock %}"><a href="{% url 'event:login_user' %}"><span class="glyphicon glyphicon-log-in"></span> Log In</a></li>
+                    </ul>
+                </div>
             </div>
         </div>
     </nav>
     
     <!-- Page Content -->
-    {% block body %}{% endblock %}
-    <footer class="footer">
+    <div style="flex:1 0 auto;">
+        {% block body %}{% endblock %}
+    </div>
+    <footer class="footer" style="flex-shrink:0;">
         &copy; {{ year|default:2025 }} Event Management System
     </footer>
 </body>

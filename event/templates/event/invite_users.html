@@ -3,8 +3,8 @@
 
 {% block body %}
 <h4>
-  Type <strong>yes</strong> beside username to send invitations for the event:
-  <strong>{{ event.name }}</strong>, else type <strong>no</strong>.
+  Select <strong>yes</strong> to send invitations for the event:
+  <strong>{{ event.name }}</strong>
 </h4>
 
 <div class="container-fluid">
@@ -30,8 +30,10 @@
                   {{ user.first_name }} {{ user.last_name }}
                 </label>
                 <div class="col-sm-8">
-                  <input type="text" name="{{ user.username }}" class="form-control"
-                         placeholder="yes / no">
+                  <select name="{{ user.username }}" class="form-control">
+                    <option value="yes">Yes</option>
+                    <option value="no" selected>No</option>
+                  </select>
                 </div>
               </div>
             {% endfor %}

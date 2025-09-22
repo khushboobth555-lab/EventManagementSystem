@@ -4,45 +4,39 @@
 
 {% block body %}
 
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12 col-md-7">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3>Withdraw Money</h3>
-        </div>
-        <div class="panel-body">
-          {% if error_message %}
-            <p><strong class="text-danger">{{ error_message }}</strong></p>
-          {% endif %}
 
-          <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            <div class="form-group">
-              <label class="control-label col-sm-2">Balance:</label>
-              <div class="col-sm-10">
-                <input type="text" name="balance" 
-                       value="{{ profile.wallet_balance }}" 
-                       readonly class="form-control">
+        <div class="container event-main-content" style="max-width:600px; margin-top:40px;">
+          <div class="card" style="box-shadow:0 2px 8px rgba(0,0,0,0.08); border-radius:12px; background:#fff; padding:32px 24px;">
+            <h2 style="font-size:2rem; font-weight:700; margin-bottom:24px; text-align:center;">Withdraw Money</h2>
+            {% if error_message %}
+              <p class="text-danger" style="text-align:center;"><strong>{{ error_message }}</strong></p>
+            {% endif %}
+            <form class="form-horizontal" role="form" action="" method="post" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="form-group" style="display:flex; align-items:center; margin-bottom:24px;">
+                <label class="control-label" style="font-size:1.1rem; flex:0 0 160px; text-align:right; margin-right:16px;">Balance:</label>
+                <div style="flex:1;">
+                  <input type="text" name="balance" value="{{ profile.wallet_balance }}" readonly class="form-control" style="font-size:1.1rem;">
+                </div>
               </div>
-            </div>
-
-            {% include 'event/form_template.html' %}
-
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success">
-                  Withdraw Money
-                </button>
+              <div class="form-group" style="display:flex; align-items:center; margin-bottom:24px;">
+                <label class="control-label" style="font-size:1.1rem; flex:0 0 160px; text-align:right; margin-right:16px;">Amount to Withdraw<span style="color:red;">*</span></label>
+                <div style="flex:1;">
+                  <input type="text" name="amount" class="form-control" style="font-size:1.1rem;" required>
+                </div>
               </div>
-            </div>
-          </form>
-
+              <div class="form-group" style="display:flex; align-items:center; margin-bottom:24px;">
+                <label class="control-label" style="font-size:1.1rem; flex:0 0 160px; text-align:right; margin-right:16px;">Enter PIN<span style="color:red;">*</span></label>
+                <div style="flex:1;">
+                  <input type="password" name="pin" class="form-control" style="font-size:1.1rem;" required>
+                </div>
+              </div>
+              <div class="form-group text-center" style="margin-top:24px;">
+                <button type="submit" class="btn btn-success" style="font-size:1.1rem; padding:10px 32px;">Withdraw Money</button>
+              </div>
+            </form>
+          </div>
         </div>
-      </div>
-    </div>
-  </div>
-</div>
+                 
 
 {% endblock %}

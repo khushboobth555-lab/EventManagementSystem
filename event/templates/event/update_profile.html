@@ -1,0 +1,25 @@
+{% extends "event/base.html" %}
+{% block title %}Update Profile{% endblock %}
+{% block body %}
+<div class="container" style="max-width:700px; margin-top:40px;margin-bottom:40px;">
+    <div class="panel panel-default">
+        <div class="panel-heading"><h3>Update Your Profile</h3></div>
+        <div class="panel-body">
+            <form method="post" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %}
+                {% with user_form as form %}
+                    {% include "event/form_template.html" %}
+                {% endwith %}
+                {% with profile_form as form %}
+                    {% include "event/form_template.html" %}
+                {% endwith %}
+                <div class="form-group text-center">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

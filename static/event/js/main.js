@@ -1,3 +1,28 @@
+
+document.addEventListener('DOMContentLoaded', function() {
+        var pinInput = document.querySelector('input[name="pin"]');
+        if (pinInput) {
+            pinInput.setAttribute('inputmode', 'numeric');
+            pinInput.setAttribute('pattern', '\\d*');
+            pinInput.setAttribute('maxlength', '4');
+            pinInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+                if (this.value.length > 4) {
+                    this.value = this.value.slice(0, 4);
+                }
+            });
+        }
+
+        var amountInput = document.querySelector('input[name="amount"]');
+        if (amountInput) {
+            amountInput.setAttribute('inputmode', 'numeric');
+            amountInput.setAttribute('pattern', '\\d*');
+            amountInput.addEventListener('input', function() {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            });
+        }
+});
+  
 // Automatically update age field when birth date changes
 
 document.addEventListener('DOMContentLoaded', function() {

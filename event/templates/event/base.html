@@ -21,7 +21,8 @@
     <!-- Custom JS -->
     <script src="{% static 'event/js/main.js' %}"></script>
 </head>
-<body>
+
+<body style="display:flex; flex-direction:column; min-height:100vh;">
     <nav class="navbar navbar-inverse navbar-fixed-top" style="box-sizing: border-box; position: relative;">
         <div class="container-fluid">
 
@@ -52,12 +53,12 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                <a class="dropdown-item" href="{% url 'event:add_money' request.user.pk %}">
+                                    <a class="dropdown-item" href="{% url 'event:add_money' %}">
                                     Add Money
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item" href="{% url 'event:withdraw_money' request.user.pk %}">
+                                    <a class="dropdown-item" href="{% url 'event:withdraw_money' %}">
                                     Withdraw Money
                                 </a>
                             </li>
@@ -86,7 +87,7 @@
                 <!-- Right Nav -->
                 <ul class="nav navbar-nav navbar-right">  
                      <li class="{% block profile_active %}{% endblock %}">
-                        <a href="{% url 'event:user_profile' user.pk %}" id="id_profile">
+                        <a href="{% url 'event:user_profile' %}" id="id_profile">
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Profile
                         </a>
                     </li>                  
@@ -100,9 +101,11 @@
         </div>
     </nav>
 
-    {% block body %}
-    {% endblock %}
-    <footer class="footer">
+    <div style="flex:1 0 auto;">
+        {% block body %}
+        {% endblock %}
+    </div>
+    <footer class="footer" style="flex-shrink:0;">
         &copy; {{ year|default:2025 }} Event Management System
     </footer>
 </body>

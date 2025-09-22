@@ -4,72 +4,65 @@
 {% block profile_active %}active{% endblock %}
 
 {% block body %}
-<div class="container-fluid events-container">
-
+<div class="container event-main-content" style="max-width:1200px;">
   <div class="row">
-
-    <!-- Left Column -->
-    <div class="col-sm-4 col-md-3">
-      <div class="panel panel-default">
-        <div class="panel-body text-center">
+    <!-- Left Column: Profile Card -->
+    <div class="col-md-4 col-sm-12">
+      <div class="card" style="box-shadow:0 2px 8px rgba(0,0,0,0.08); border-radius:12px; padding:32px 24px; background:#fff; margin-bottom:32px;">
+        <div class="text-center">
           {% if profile.image %}
-            <img src="{{ profile.image.url }}" class="img-responsive" alt="Profile Picture">
+            <img src="{{ profile.image.url }}" class="img-responsive" alt="Profile Picture" style="max-width:220px; border-radius:10px; margin-bottom:16px;">
           {% else %}
-            <img src="{% static 'event/images/default_profile.png' %}" class="img-responsive" alt="Default Profile">
+            <img src="{% static 'event/images/default_profile.png' %}" class="img-responsive" alt="Default Profile" style="max-width:220px; border-radius:10px; margin-bottom:16px;">
           {% endif %}
-          <br>
-          <h1>{{ user.last_name }},</h1>
-          <h2>{{ user.first_name }}</h2>
-          <h2>{{ user.username }}</h2>
+          <h2 style="font-size:2.2rem; font-weight:700; margin-bottom:8px;">{{ user.first_name }} {{ user.last_name }}</h2>
         </div>
+        <form action="{% url 'event:update_profile' %}" method="get" style="margin-top:24px;">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-info btn-block" style="font-size:1.1rem; margin-bottom:10px;">
+            <span class="glyphicon glyphicon-edit"></span> Update Profile Details
+          </button>
+        </form>
+        <a href="{% url 'event:change_password' %}" class="btn btn-warning btn-block" style="font-size:1.1rem; margin-bottom:10px;">
+          <span class="glyphicon glyphicon-lock"></span> Change Password
+        </a>
+        <a href="{% url 'event:change_wallet_pin' %}" class="btn btn-danger btn-block" style="font-size:1.1rem;">
+          <span class="glyphicon glyphicon-credit-card"></span> Change Wallet Pin
+        </a>
       </div>
     </div>
 
-    <!-- Right Column -->
-    <div class="col-sm-8 col-md-9">
-
-      <!-- Profile Info -->
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          {{ user.first_name }} {{ user.last_name }}
+    <!-- Right Column: Profile Info & Tickets -->
+    <div class="col-md-8 col-sm-12">
+      <div class="card" style="box-shadow:0 2px 8px rgba(0,0,0,0.08); border-radius:12px; background:#f8f9fa; margin-bottom:32px; padding:32px 24px;">
+        <div style="border-bottom:1px solid #e9ecef; margin-bottom:24px;">
+          <h4 style="font-size:1.3rem; font-weight:600; color:#1976d2; margin-bottom:12px;">Hi, {{ user.first_name|lower }}</h4>
         </div>
-        <div class="panel-body">
-          <h4>Bio: {{ profile.bio }}</h4>
-          <h4>Age: {{ profile.age }}</h4>
-          <h4>DoB: {{ profile.birth_date }}</h4>
-          <h4>Address: {{ profile.location }}</h4>
-          <h4>Wallet Balance: {{ profile.wallet_balance }}</h4>
+        <div style="font-size:1.2rem; font-weight:500; color:#222; margin-bottom:24px;">
+          <div><strong>Bio:</strong> {{ profile.bio }}</div>
+          <div><strong>Age:</strong> {{ profile.age }}</div>
+          <div><strong>DoB:</strong> {{ profile.birth_date|date:'M. d, Y' }}</div>
+          <div><strong>Address:</strong> {{ profile.location }}</div>
+          <div><strong>Wallet Balance:</strong> <span style="color:#28a745; font-weight:700;">{{ profile.wallet_balance }}</span></div>
         </div>
       </div>
-
-      <!-- Tickets & Invitations -->
-      <div class="panel panel-info">
-        <div class="panel-heading">
-          {{ user.first_name }}’s Tickets & Invitations
+      <div class="card" style="box-shadow:0 2px 8px rgba(0,0,0,0.08); border-radius:12px; background:#f8f9fa; padding:32px 24px;">
+        <div style="border-bottom:1px solid #e9ecef; margin-bottom:24px;">
+          <h4 style="font-size:1.3rem; font-weight:600; color:#1976d2; margin-bottom:12px;">{{ user.first_name }}'s Tickets & Invitations</h4>
         </div>
-        <div class="panel-body">
-          {% if tickets %}
-            {% for ticket in tickets %}
-              <h4>Event: {{ ticket.event.name }}</h4>
-              <h4>
-                Type:
-                {% if ticket.flag %}
-                  Ticket
-                {% else %}
-                  Invitation
-                {% endif %}
-              </h4>
-              <br>
-            {% endfor %}
-          {% else %}
-            <p>No tickets or invitations yet.</p>
-          {% endif %}
-        </div>
+        {% if tickets %}
+          {% for ticket in tickets %}
+            <div style="margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid #e9ecef;">
+              <div><strong>Event:</strong> {{ ticket.event.name }}</div>
+              <div><strong>Type:</strong> Ticket</div>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div>No tickets or invitations found.</div>
+        {% endif %}
       </div>
-
     </div>
-
   </div>
-
 </div>
+        
 {% endblock %}

@@ -3,42 +3,42 @@
 {% block wallet_active %}active{% endblock %}
 
 {% block body %}
-
-{% if error_message %}
-  <h5 class="error_message">{{ error_message }}</h5>
-{% endif %}
-
-{% if error_balance %}
-  <h5 class="error_message">{{ error_balance }}</h5>
-  <a href="{% url 'event:add_money' profile.user.pk %}">
-    <button type="button">Add Money</button>
-  </a>
-{% endif %}
-
-<form action="" method="post">
-  {% csrf_token %}
-  
-  <div class="form-group">
-    <label for="wallet_balance">Available Balance:</label>
-    <input type="text" id="wallet_balance" 
-           name="wallet_balance" 
-           value="{{ profile.wallet_balance }}" 
-           readonly class="form-control">
+<div class="container event-main-content" style="max-width:600px; margin-top:40px;">
+  <div class="card" style="box-shadow:0 2px 8px rgba(0,0,0,0.08); border-radius:12px; background:#fff; padding:32px 24px;">
+    <h2 style="font-size:2rem; font-weight:700; margin-bottom:24px; text-align:center;">Buy Ticket</h2>
+    {% if error_message %}
+      <p class="text-danger" style="text-align:center;"><strong>{{ error_message }}</strong></p>
+    {% endif %}
+    {% if error_balance %}
+      <p class="text-danger" style="text-align:center;"><strong>{{ error_balance }}</strong></p>
+      <div class="text-center" style="margin-bottom:16px;">
+        <a href="{% url 'event:add_money' %}" class="btn btn-info">Add Money</a>
+      </div>
+    {% endif %}
+    <form action="" method="post" style="margin-top:24px;">
+      {% csrf_token %}
+      <div class="form-group" style="display:flex; align-items:center; margin-bottom:24px;">
+        <label for="wallet_balance" class="control-label" style="font-size:1.1rem; flex:0 0 160px; text-align:right; margin-right:16px;">Available Balance:</label>
+        <div style="flex:1;">
+          <input type="text" id="wallet_balance" name="wallet_balance" value="{{ profile.wallet_balance }}" readonly class="form-control" style="font-size:1.1rem;">
+        </div>
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; margin-bottom:24px;">
+        <label for="ticket_fare" class="control-label" style="font-size:1.1rem; flex:0 0 160px; text-align:right; margin-right:16px;">Ticket Fare:</label>
+        <div style="flex:1;">
+          <input type="text" id="ticket_fare" name="ticket_fare" value="{{ event.fare }}" readonly class="form-control" style="font-size:1.1rem;">
+        </div>
+      </div>
+      <div class="form-group" style="display:flex; align-items:center; margin-bottom:24px;">
+        <label for="pin" class="control-label" style="font-size:1.1rem; flex:0 0 160px; text-align:right; margin-right:16px;">Enter PIN:</label>
+        <div style="flex:1;">
+          {{ form.pin }}
+        </div>
+      </div>
+      <div class="form-group text-center" style="margin-top:24px;">
+        <button type="submit" class="btn btn-success" style="font-size:1.1rem; padding:10px 32px;">Submit</button>
+      </div>
+    </form>
   </div>
-
-  <div class="form-group">
-    <label for="ticket_fare">Ticket Fare:</label>
-    <input type="text" id="ticket_fare" 
-           name="ticket_fare" 
-           value="{{ event.fare }}" 
-           readonly class="form-control">
-  </div>
-
-  <div class="form-group">
-    {{ form }}
-  </div>
-
-  <input type="submit" value="Submit" class="btn btn-success">
-</form>
 
 {% endblock %}

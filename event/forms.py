@@ -1,6 +1,8 @@
+
 from django import forms
 from django.contrib.auth.models import User
 from .models import Event, Profile
+from datetime import date
 
 
 class EventForm(forms.ModelForm):
@@ -20,13 +22,6 @@ class UserForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password', 'first_name', 'last_name']
-
-
-
-
-
-
-from datetime import date
 
 
 class ProfileForm(forms.ModelForm):
@@ -63,6 +58,42 @@ class ProfileForm(forms.ModelForm):
     class Meta:
         model = Profile
         fields = [ 'birth_date', 'age', 'wallet_pin', 'image', 'bio', 'location']
+
+
+
+# Form for updating user profile (excluding username)
+class UpdateUserForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    first_name = forms.CharField(required=True)
+    last_name = forms.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = [ 'email', 'first_name', 'last_name']
+
+# Form for updating Profile model
+class UpdateProfileForm(forms.ModelForm):
+    
+    bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    location = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
+    age = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}), required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        birth_date = cleaned_data.get('birth_date')
+        if birth_date:
+            today = date.today()
+            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+            cleaned_data['age'] = age
+            if age < 18:
+                self.add_error('birth_date', 'You must be at least 18 years old to register.')
+        return cleaned_data
+
+    class Meta:
+        model = Profile
+        fields = [ 'birth_date', 'age', 'image', 'bio', 'location']
+
 
 
 class AddMoneyForm(forms.Form):
