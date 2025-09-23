@@ -4,18 +4,22 @@
 
 {% block body %}
 <div class="container event-main-content event-form-container">
-    <div class="card event-form-card">
-        <h2 class="event-form-title">{% if event %}Update Event Details{% else %}Add New Event{% endif %}</h2>
-        {% if error_message %}
-            <p class="text-danger event-form-error"><strong>{{ error_message }}</strong></p>
-        {% endif %}
-        <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            {% include "event/form_template.html" %}
-            <div class="form-group text-center event-form-btn-group">
-                <button type="submit" class="btn btn-success btn-lg">{% if event %}Update Event{% else %}Add Event{% endif %}</button>
-            </div>
-        </form>
+    <div class="card event-form-card" style="padding:0;">
+        <div class="form-heading">
+            {% if event %}Update Event Details{% else %}Add New Event{% endif %}
+        </div>
+        <div style="padding:32px 24px; border-radius:0 0 12px 12px;">
+            {% if error_message %}
+                <p class="text-danger event-form-error"><strong>{{ error_message }}</strong></p>
+            {% endif %}
+            <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {% include "event/form_template.html" %}
+                <div class="form-group text-center event-form-btn-group">
+                    <button type="submit" class="btn btn-success btn-lg">{% if event %}Update Event{% else %}Add Event{% endif %}</button>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
 

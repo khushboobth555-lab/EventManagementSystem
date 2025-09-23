@@ -1,7 +1,39 @@
-/* Prevent header overlap with content for visitor pages */
+/* Unified form heading for cards */
+.form-heading {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    border-radius: 12px 12px 0 0;
+    background: #e3f2fd;
+    padding: 24px 24px;
+    width: 100%;
+}
+
+.event-form-container {
+    max-width: 700px;
+    margin-top: 60px;
+    margin-bottom: 30px;
+}
+.event-form-card {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    border-radius: 12px;
+    padding: 40px 32px;
+    background: #fff;
+}
+.event-form-title {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+    text-align: center;
+}
+/* Remove stray lines above. Correct .event-form-title block below. */
+.event-form-btn-group {
+    margin-top: 24px;
+}
+/* Prevent header overlap with content for visitor pages 
 .event-header-navbar {
     z-index: 1000;
-}
+}*/
 .event-header-user {
     margin-left: auto;
 }
@@ -29,7 +61,12 @@ body > .container, body > .container-fluid, body > .event-home, body > .events-c
     background: #222;
     border-bottom: 2px solid #1976d2;
     min-height: 60px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+  /*  z-index: 1050;*/
 }
 .event-header-container {
     padding: 0 24px;
@@ -98,10 +135,11 @@ event-header-nav > li > a:hover {
     margin-bottom: 32px;
 }
 .event-home-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
     justify-content: flex-start;
+    display: flex;
+    flex-wrap: wrap;    
+    /*gap: 32px 40px;*/
+    margin-bottom: 32px;
 }
 
 .event-home-card {
@@ -109,14 +147,23 @@ event-header-nav > li > a:hover {
     border-radius: 8px;
     background: #fff;
     border: 1px solid #e9ecef;
-    margin-bottom: 32px;
+    margin-bottom: 32px !important;
     display: flex;
     flex-direction: column;
-    height: 100%;
     padding-bottom: 16px;
-    min-width: 260px;
+    min-width: 280px;
     max-width: 320px;
-    margin-right: 40px;
+    min-height: 340px;
+    max-height: 340px;
+    position: relative;
+    }
+
+.event-home-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    flex-grow: 1;
+    height: 100%;
 }
 .event-home-image {
     width: 100%;
@@ -204,8 +251,14 @@ event-header-nav > li > a:hover {
     font-size: 1.1rem;
 }
 .event-detail .event-inr {
-    font-size: 18px;
-    font-weight: bold;
+         font-size: 18px;
+         font-weight: bold;
+         vertical-align: middle;
+         font-size: 1.1em;
+         display: inline-block;
+         line-height: 1;
+         position: relative;
+         top: 1px;
 }
 .event-detail .event-action-group .btn {
     min-width: 120px;
@@ -435,6 +488,15 @@ event-header-nav > li > a:hover {
     border-radius: 8px;
     margin-bottom: 24px;
     border: 1px solid #e9ecef;
+}
+.form-heading{
+    font-size:2rem; 
+    font-weight:700;
+    text-align:center; 
+    border-radius:12px 12px 0 0;
+    background:#e3f2fd;
+    padding:24px 24px; 
+    width:100%;
 }
 .event-detail .panel-heading {
     font-size: 1.3rem;

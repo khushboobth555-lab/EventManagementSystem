@@ -23,7 +23,7 @@
 </head>
 
 <body style="display:flex; flex-direction:column; min-height:100vh;">
-    <nav class="navbar navbar-inverse navbar-fixed-top" style="box-sizing: border-box; position: relative;">
+    <nav class="navbar navbar-inverse navbar-fixed-top " style="box-sizing: border-box;">
         <div class="container-fluid">
 
             <!-- Header -->
@@ -39,12 +39,19 @@
             <!-- Items -->
             <div class="collapse navbar-collapse" id="topNavBar">
                 <ul class="nav navbar-nav">
+                    
                     <li class="{% block events_active %}{% endblock %}">
                         <a href="{% url 'event:home' %}">
                             <span class="glyphicon glyphicon-glass" aria-hidden="true"></span> Events
                         </a>
                     </li>
-                   
+                   {% if request.user.is_superuser %}
+                    <li>
+                        <a href="{% url 'event:add_event' %}">
+                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Event
+                        </a>
+                    </li>
+                    {% endif %}
 
                     <!-- Wallet Dropdown -->
                     <li class="dropdown {% block wallet_active %}{% endblock %}">
@@ -101,7 +108,7 @@
         </div>
     </nav>
 
-    <div style="flex:1 0 auto;">
+    <div style="flex:1 0 auto; margin-top:70px;">
         {% block body %}
         {% endblock %}
     </div>
