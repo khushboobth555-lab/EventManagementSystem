@@ -1,3 +1,5 @@
+from django.urls import reverse
+
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import update_session_auth_hash
 
@@ -18,7 +20,7 @@ import json
 from .models import Event, Profile, Ticket
 from .forms import EventForm, UserForm, UpdateUserForm,ProfileForm ,UpdateProfileForm,AddMoneyForm, WithdrawMoneyForm, BuyTicketForm
 
-IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg']
+IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg', 'webp']
 
 def custom_404_view(request, exception=None):
     return render(request, '404.html', status=404)
@@ -61,7 +63,7 @@ def register(request):
             context = {
                 'register_form': register_form,
                 'profile_form': profile_form,
-                'error_message': 'Image file must be PNG, JPG, or JPEG',
+                'error_message': 'Image file must be PNG, JPG, WebP or JPEG',
             }
             return render(request, 'event/register.html', context)
 
@@ -117,7 +119,7 @@ def update_profile(request):
                 context = {
                     'user_form': user_form,
                     'profile_form': profile_form,
-                    'error_message': 'Image file must be PNG, JPG, or JPEG',
+                    'error_message': 'Image file must be PNG, JPG, WebP or JPEG',
                  }
                 return render(request, 'event/update_profile.html', context)
 
@@ -148,40 +150,67 @@ def detail(request, pk):
     return render(request, 'event/detail.html', {'event': event, 'user': user, 'tickets': tickets})
 
 
+def add_event(request):
+    if not request.user.is_superuser:
+        return render(request, '403.html', status=403)
+    if request.method == 'POST':
+        form = EventForm(request.POST, request.FILES)
+        if form.is_valid():
+            event = form.save(commit=False)
+            event.manager = request.user
+            image = form.cleaned_data.get('image')
+            if image:
+                file_type = event.image.url.split('.')[-1].lower()
+                if file_type not in IMAGE_FILE_TYPES:
+                    return render(request, 'event/event_form.html', {
+                        'form': form,
+                        'error_message': 'Image file must be PNG, JPG, WebP or JPEG',
+                    })
+                event.save()
+                return redirect(reverse('event:detail', kwargs={'pk': event.pk}))
+        return render(request, 'event/event_form.html', {'form': form})
+    else:
+        form = EventForm()
+        return render(request, 'event/event_form.html', {'form': form})
+
 class EventUpdate(UpdateView):
     model = Event
     form_class = EventForm
 
     def get(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return render(request, '403.html', status=403)
         pk = kwargs.get('pk')
         event = get_object_or_404(Event, pk=pk)
-        
         form = self.form_class(instance=event)
         user = request.user
-        tickets = Ticket.objects.filter(event=event)
         return render(request, 'event/event_form.html', {
             'form': form,
-            'event': event,
-            'user': user,
-            'tickets': tickets,
+            'event': event
         })
     def post(self, request, *args, **kwargs):
+        if not request.user.is_superuser:
+            return render(request, '403.html', status=403)
         pk = kwargs.get('pk')
         event = get_object_or_404(Event, pk=pk)
         form = self.form_class(request.POST, request.FILES, instance=event)
         if form.is_valid():
+            image = form.cleaned_data.get('image')
+            if image:
+                file_type = image.name.split('.')[-1].lower()
+                if file_type not in IMAGE_FILE_TYPES:
+                    context = {
+                        'form': form,
+                        'event': event,
+                        'error_message': 'Image file must be PNG, JPG, WebP or JPEG',
+                    }
+                    return render(request, 'event/event_form.html', context)
             form.save()
-            tickets = Ticket.objects.filter(event=event)
-            return render(request, 'event/detail.html', {'event': event, 'user': request.user, 'tickets': tickets})
-        user = request.user
-        tickets = Ticket.objects.filter(event=event)
+            return redirect(reverse('event:detail', kwargs={'pk': event.pk}))
         return render(request, 'event/event_form.html', {
             'form': form,
-            'event': event,
-            'user': user,
-            'tickets': tickets,
+            'event': event          
         })
-
 
 def get_past_events(request):
     events = Event.objects.filter(date__lt=date.today())
@@ -292,8 +321,7 @@ def send_invites(request, pk):
         for user in users:
             if request.POST.get(user.username) == 'yes':
                 Ticket.objects.create(attendee=user, event=event, flag=False)
-        events = Event.objects.all()
-        return render(request, 'event/home.html', {'events': events})
+        return redirect(reverse('event:detail', kwargs={'pk': event.pk}))
 
 
 def event_name_validate(request):
@@ -308,9 +336,13 @@ def event_name_validate(request):
 def event_date_validate(request):
     inp_date = request.GET.get('date')
     if inp_date:
-        inp_date = datetime.datetime.strptime(inp_date, "%m/%d/%Y").date()
-        if inp_date < date.today():
+        # HTML date input returns 'YYYY-MM-DD'
+        try:
+            inp_date = datetime.datetime.strptime(inp_date, "%Y-%m-%d").date()
+        except ValueError:
             return HttpResponse(json.dumps({'valid': 'false'}), content_type="application/json")
+        # if inp_date < date.today():
+        #     return HttpResponse(json.dumps({'valid': 'false'}), content_type="application/json")
     return HttpResponse(json.dumps({'valid': 'true'}), content_type="application/json")
 
 def custom_bad_request(request, exception=None):

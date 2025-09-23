@@ -1,28 +1,21 @@
 {% extends "event/base.html" %}
-{% block title %}Update Event{% endblock %}
+{% block title %}{% if event %}Update Event{% else %}Add Event{% endif %}{% endblock %}
 {% block events_active %}active{% endblock %}
 
 {% block body %}
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-12 col-md-7">
-            <div class="panel panel-default">
-                <h3>Update Event Details</h3>
-                {% if error_message %}
-                    <p><strong class="text-danger">{{ error_message }}</strong></p>
-                {% endif %}
-
-                <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    {% include "event/form_template.html" %}
-                    <div class="form-group">
-                        <div class="col-sm-offset-2 col-sm-10">
-                            <button type="submit" class="btn btn-success">Update Event</button>
-                        </div>
-                    </div>
-                </form>
+<div class="container event-main-content event-form-container">
+    <div class="card event-form-card">
+        <h2 class="event-form-title">{% if event %}Update Event Details{% else %}Add New Event{% endif %}</h2>
+        {% if error_message %}
+            <p class="text-danger event-form-error"><strong>{{ error_message }}</strong></p>
+        {% endif %}
+        <form class="form-horizontal" role="form" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {% include "event/form_template.html" %}
+            <div class="form-group text-center event-form-btn-group">
+                <button type="submit" class="btn btn-success btn-lg">{% if event %}Update Event{% else %}Add Event{% endif %}</button>
             </div>
-        </div>
+        </form>
     </div>
 </div>
 

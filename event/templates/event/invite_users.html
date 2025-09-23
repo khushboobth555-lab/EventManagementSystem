@@ -2,54 +2,45 @@
 {% block title %}Send Invitations{% endblock %}
 
 {% block body %}
-<h4>
-  Select <strong>yes</strong> to send invitations for the event:
-  <strong>{{ event.name }}</strong>
-</h4>
-
-<div class="container-fluid">
-  <div class="row">
-    <div class="col-sm-12 col-md-7">
-      <div class="panel panel-default">
-        <div class="panel-heading">
-          <h3>Send Invitations</h3>
-        </div>
-        <div class="panel-body">
-          {% if error_message %}
-            <p><strong class="text-danger">{{ error_message }}</strong></p>
-          {% endif %}
-
-          <form class="form-horizontal" role="form"
-                action="{% url 'event:send_invites' event.id %}"
-                method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-
-            {% for user in users %}
-              <div class="form-group">
-                <label class="col-sm-4 control-label">
-                  {{ user.first_name }} {{ user.last_name }}
-                </label>
-                <div class="col-sm-8">
-                  <select name="{{ user.username }}" class="form-control">
-                    <option value="yes">Yes</option>
-                    <option value="no" selected>No</option>
-                  </select>
-                </div>
-              </div>
-            {% endfor %}
-
-            <div class="form-group">
-              <div class="col-sm-offset-2 col-sm-10">
-                <button type="submit" class="btn btn-success">
-                  Send Invitations
-                </button>
-              </div>
-            </div>
-          </form>
-
-        </div>
-      </div>
+<div class="container event-main-content" style="max-width:900px; margin-top:40px;">
+  <div class="card" style="box-shadow:0 2px 8px rgba(0,0,0,0.08); border-radius:12px; padding:32px 24px; background:#fff;">
+    <div style="border-bottom:1px solid #e9ecef; margin-bottom:24px;">
+      <h2 style="font-size:2rem; font-weight:700; margin-bottom:8px;">Send Invitations</h2>
+      <div style="font-size:1.1rem; color:#1976d2; margin-bottom:8px;">Event: <strong>{{ event.name }}</strong></div>
+      <div style="font-size:1rem; color:#555;">Select <strong>Yes</strong> to send invitations to users below.</div>
     </div>
+    {% if error_message %}
+      <p><strong class="text-danger">{{ error_message }}</strong></p>
+    {% endif %}
+    <form class="form-horizontal" role="form" action="{% url 'event:send_invites' event.id %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+          <thead>
+            <tr>
+              <th>User Name</th>
+              <th>Send Invitation?</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user.first_name }} {{ user.last_name }}</td>
+              <td>
+                <select name="{{ user.username }}" class="form-control">
+                  <option value="yes">Yes</option>
+                  <option value="no" selected>No</option>
+                </select>
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div class="form-group text-center" style="margin-top:24px;">
+        <button type="submit" class="btn btn-success btn-lg">Send Invitations</button>
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}

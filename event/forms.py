@@ -6,6 +6,14 @@ from datetime import date
 
 
 class EventForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'maxlength': '50'}))
+    location = forms.CharField(widget=forms.Textarea(attrs={'rows': 1, 'maxlength': '500'}), required=True)
+    date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
+
+    time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
+    fare = forms.CharField(widget=forms.NumberInput(attrs={'inputmode': 'numeric' }), required=True )
+    image = forms.ImageField(required=True)
+
     class Meta:
         model = Event
         fields = ['name', 'location', 'date', 'time', 'fare', 'image']
@@ -33,8 +41,8 @@ class ProfileForm(forms.ModelForm):
         label='Wallet PIN',
         help_text='Enter a 4-digit number.'
     )
-    bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
-    location = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+    bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
+    location = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
     birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
     age = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}), required=False)
 
