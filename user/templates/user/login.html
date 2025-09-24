@@ -1,4 +1,4 @@
-{% extends 'event/base_visitor.html' %}
+{% extends 'user/base_visitor.html' %}
 
 {% block title %}LogIn{% endblock %}
 {% block login_active %}active{% endblock %}
@@ -12,7 +12,7 @@
                 {% if error_message %}
                     <p><strong class="text-danger">{{ error_message }}</strong></p>
                 {% endif %}
-                <form class="form-horizontal" role="form" action="{% url 'event:login_user' %}" method="post" enctype="multipart/form-data">
+                <form class="form-horizontal" role="form" action="{% url 'user:login_user' %}" method="post" enctype="multipart/form-data">
                     {% csrf_token %}
                     <div class="form-group">
                         <label class="control-label col-sm-2" for="id_username">Username:</label>
@@ -34,7 +34,7 @@
                 </form>
             </div>
             <div class="panel-footer">
-                Don’t have an account? <a href="{% url 'event:register' %}">Click here</a> to register.
+                Don’t have an account? <a href="{% url 'user:register' %}">Click here</a> to register.
             </div>
         </div>
     </div>

@@ -1,4 +1,4 @@
-{% extends "event/base_visitor.html" %}
+{% extends "user/base_visitor.html" %}
 {% block title %}Register{% endblock %}
 {% block register_active %}active{% endblock %}
 
@@ -28,7 +28,7 @@
         </div>
         <div class="panel-footer">
             Already have an account? 
-            <a href="{% url 'event:login_user' %}">Click here</a> to login.
+            <a href="{% url 'user:login_user' %}">Click here</a> to login.
         </div>
     </div>
 </div>

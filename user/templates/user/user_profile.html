@@ -17,16 +17,16 @@
           {% endif %}
           <h2 style="font-size:2.2rem; font-weight:700; margin-bottom:8px;">{{ user.first_name }} {{ user.last_name }}</h2>
         </div>
-        <form action="{% url 'event:update_profile' %}" method="get" style="margin-top:24px;">
+  <form action="{% url 'user:update_profile' %}" method="get" style="margin-top:24px;">
           {% csrf_token %}
           <button type="submit" class="btn btn-info btn-block" style="font-size:1.1rem; margin-bottom:10px;">
             <span class="glyphicon glyphicon-edit"></span> Update Profile Details
           </button>
         </form>
-        <a href="{% url 'event:change_password' %}" class="btn btn-warning btn-block" style="font-size:1.1rem; margin-bottom:10px;">
+  <a href="{% url 'user:change_password' %}" class="btn btn-warning btn-block" style="font-size:1.1rem; margin-bottom:10px;">
           <span class="glyphicon glyphicon-lock"></span> Change Password
         </a>
-        <a href="{% url 'event:change_wallet_pin' %}" class="btn btn-danger btn-block" style="font-size:1.1rem;">
+  <a href="{% url 'user:change_wallet_pin' %}" class="btn btn-danger btn-block" style="font-size:1.1rem;">
           <span class="glyphicon glyphicon-credit-card"></span> Change Wallet Pin
         </a>
       </div>

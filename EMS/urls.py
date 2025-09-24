@@ -15,6 +15,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("event/", include("event.urls")),
+    path("user/", include("user.urls")),
     path("", include("event.urls")),
 ]
 if settings.DEBUG:

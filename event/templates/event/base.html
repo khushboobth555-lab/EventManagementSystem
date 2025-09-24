@@ -60,12 +60,12 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li>
-                                    <a class="dropdown-item" href="{% url 'event:add_money' %}">
+                                    <a class="dropdown-item" href="{% url 'user:add_money' %}">
                                     Add Money
                                 </a>
                             </li>
                             <li>
-                                    <a class="dropdown-item" href="{% url 'event:withdraw_money' %}">
+                                    <a class="dropdown-item" href="{% url 'user:withdraw_money' %}">
                                     Withdraw Money
                                 </a>
                             </li>
@@ -94,12 +94,12 @@
                 <!-- Right Nav -->
                 <ul class="nav navbar-nav navbar-right">  
                      <li class="{% block profile_active %}{% endblock %}">
-                        <a href="{% url 'event:user_profile' %}" id="id_profile">
+                        <a href="{% url 'user:profile' %}" id="id_profile">
                             <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Profile
                         </a>
                     </li>                  
                     <li>
-                        <a href="{% url 'event:logout_user' %}">
+                        <a href="{% url 'user:logout_user' %}">
                             <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout
                         </a>
                     </li>
