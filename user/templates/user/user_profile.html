@@ -54,7 +54,7 @@
           {% for ticket in tickets %}
             <div style="margin-bottom:18px; padding-bottom:12px; border-bottom:1px solid #e9ecef;">
               <div><strong>Event:</strong> {{ ticket.event.name }}</div>
-              <div><strong>Type:</strong> Ticket</div>
+              <div><strong>Type:</strong> {% if ticket.flag %}Ticket{% else %}Invitation{% endif %}</div>
             </div>
           {% endfor %}
         {% else %}

@@ -129,6 +129,12 @@ def buy_ticket(request, pk):
         form = BuyTicketForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
+            # Check if user already has a ticket for this event
+            if Ticket.objects.filter(attendee=user, event=event).exists():
+                error_message = 'You have already purchased a ticket for this event.'
+                return render(request, 'event/buy_ticket.html', {
+                    'profile': profile, 'form': form, 'event': event, 'error_message': error_message
+                })
             if int(data['pin']) == profile.wallet_pin:
                 if event.fare > profile.wallet_balance:
                     error_balance = 'Insufficient balance to buy ticket'
@@ -142,9 +148,7 @@ def buy_ticket(request, pk):
                 profile.save()
                 owner_profile.save()
                 tickets = Ticket.objects.filter(attendee=request.user)
-                return render(request, 'user/user_profile.html', {
-                    'user': user, 'profile': profile, 'tickets': tickets
-                })
+                return redirect('user:profile')
             context = {'profile': profile, 'form': form, 'event': event, 'error_message': 'Invalid Pin!'}
             return render(request, 'event/buy_ticket.html', context)
     else:
@@ -153,17 +157,19 @@ def buy_ticket(request, pk):
 
 
 def invite_users(request, pk):
-    all_users = User.objects.filter(is_superuser=False)
+    all_users = User.objects.all()
     event = Event.objects.get(id=pk)
-    attendees = [t.attendee for t in Ticket.objects.filter(event=event)]
-    attendees.append(request.user)
-    users = list(set(all_users) - set(attendees))
+    # Only users who have NOT bought a ticket (flag=True) for this event
+    ticket_buyers = [t.attendee for t in Ticket.objects.filter(event=event, flag=True)]
+    invited_users = [t.attendee for t in Ticket.objects.filter(event=event, flag=False)]
+    # Exclude manager, ticket buyers, and already invited users
+    users = list(set(all_users) - set(ticket_buyers) - set(invited_users) - {event.manager})
     context = {'users': users, 'event': event}
     return render(request, 'event/invite_users.html', context)
 
 
 def send_invites(request, pk):
-    all_users = User.objects.filter(is_superuser=False)
+    all_users = User.objects.all()
     event = Event.objects.get(id=pk)
     attendees = [t.attendee for t in Ticket.objects.filter(event=event)]
     attendees.append(request.user)

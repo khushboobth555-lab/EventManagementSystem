@@ -120,9 +120,7 @@ def add_money(request):
                 profile.wallet_balance += data['amount']
                 profile.save()
                 tickets = Ticket.objects.filter(attendee=request.user)
-                return render(request, 'user/user_profile.html', {
-                    'user': user, 'profile': profile, 'tickets': tickets
-                })
+                return redirect('user:profile')
             context = {'profile': profile, 'form': form, 'error_message': 'Invalid Pin!'}
             return render(request, 'user/add_money.html', context)
     else:
@@ -149,10 +147,7 @@ def withdraw_money(request):
                     return render(request, 'user/withdraw_money.html', context)
                 profile.wallet_balance -= data['amount']
                 profile.save()
-                tickets = Ticket.objects.filter(attendee=request.user)
-                return render(request, 'user/user_profile.html', {
-                    'user': request.user, 'profile': profile, 'tickets': tickets
-                })
+                return redirect('user:profile')
             context = {'profile': profile, 'form': form, 'error_message': 'Invalid Pin!'}
             return render(request, 'user/withdraw_money.html', context)
     else:
