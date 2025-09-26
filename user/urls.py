@@ -13,4 +13,5 @@ urlpatterns = [
     path('profile/change_wallet_pin/', views.change_wallet_pin, name='change_wallet_pin'),
     path('add_money/', views.add_money, name='add_money'),
     path('withdraw_money/', views.withdraw_money, name='withdraw_money'),
+    path('wallet/history/', views.wallet_history, name='wallet_history'),
 ]

@@ -1,3 +1,4 @@
+
 from django.urls import reverse
 from django.contrib.auth import update_session_auth_hash
 from django.contrib import messages
@@ -5,9 +6,8 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from datetime import date
-from .models import Profile
+from .models import Profile,WalletTransaction
 from .forms import UserForm, ProfileForm, UpdateUserForm, UpdateProfileForm, AddMoneyForm, WithdrawMoneyForm
-
 from event.models import Ticket
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg', 'webp']
 
@@ -119,8 +119,18 @@ def add_money(request):
             if int(data['pin']) == profile.wallet_pin:
                 profile.wallet_balance += data['amount']
                 profile.save()
+                # Determine purpose: ADDED_MONEY (manual) or CREDITED_ON_BOOKING (system/booking)
+                purpose = WalletTransaction.Purpose.ADDED_MONEY
+                reference = f"Added by user: {user.username}"
+                WalletTransaction.objects.create(
+                    user=user,
+                    amount=data['amount'],
+                    type=WalletTransaction.Type.CREDIT,
+                    purpose=purpose,
+                    reference=reference
+                )
                 tickets = Ticket.objects.filter(attendee=request.user)
-                return redirect('user:profile')
+                return redirect('user:wallet_history')
             context = {'profile': profile, 'form': form, 'error_message': 'Invalid Pin!'}
             return render(request, 'user/add_money.html', context)
     else:
@@ -147,12 +157,30 @@ def withdraw_money(request):
                     return render(request, 'user/withdraw_money.html', context)
                 profile.wallet_balance -= data['amount']
                 profile.save()
-                return redirect('user:profile')
+                # Determine purpose: ADDED_MONEY (manual) or CREDITED_ON_BOOKING (system/booking)
+                purpose = WalletTransaction.Purpose.WITHDRAWAL
+                reference = f"Withdrawal by user: {user.username}"
+                WalletTransaction.objects.create(
+                    user=user,
+                    amount=data['amount'],
+                    type=WalletTransaction.Type.DEBIT,
+                    purpose=purpose,
+                    reference=reference
+                )
+                return redirect('user:wallet_history')
             context = {'profile': profile, 'form': form, 'error_message': 'Invalid Pin!'}
             return render(request, 'user/withdraw_money.html', context)
     else:
         form = WithdrawMoneyForm()
     return render(request, 'user/withdraw_money.html', {'profile': profile, 'form': form})
+# Wallet transaction history view
+
+
+def wallet_history(request):
+    if not request.user.is_authenticated:
+        return redirect('user:login_user')
+    transactions = WalletTransaction.objects.filter(user=request.user).order_by('-created_at')
+    return render(request, 'user/wallet_history.html', {'transactions': transactions})
 
 # Change Password View
 def change_password(request):

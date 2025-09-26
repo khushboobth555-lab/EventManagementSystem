@@ -1,0 +1,50 @@
+{% extends 'event/base.html' %}
+{% block title %}Wallet Transaction History{% endblock %}
+{% block body %}
+<div class="container" style="margin-top:40px; max-width:900px;">
+    <h2 class="text-center mb-4"><i class="fas fa-wallet"></i> Wallet Transaction History</h2>
+    <hr>
+    <div class="table-responsive shadow rounded">
+        <table class="table table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount</th>
+                    <th>Purpose</th>
+                    <th>Reference</th>
+                    <th>Payment Ref</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for txn in transactions %}
+                <tr>
+                    <td class="fw-bold {% if txn.type == 'credit' %}text-success{% else %}text-danger{% endif %}">{{ txn.created_at|date:'M d, Y H:i' }}</td>
+                    <td>
+                        {% if txn.type == 'credit' %}
+                            <span  class="fw-bold text-success">Credit</span>
+                        {% else %}
+                            <span class="fw-bold text-danger">Debit</span>
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold {% if txn.type == 'credit' %}text-success{% else %}text-danger{% endif %}">₹{{ txn.amount }}</td>
+                    <td class="fw-bold {% if txn.type == 'credit' %}text-success{% else %}text-danger{% endif %}">{{ txn.get_purpose_display }}</td>
+                    <td  class="fw-bold {% if txn.type == 'credit' %}text-success{% else %}text-danger{% endif %}">
+                        {% if txn.event and txn.purpose == 'ticket_booking' %}
+                            <a href="{% url 'event:detail' txn.event.id %}">{{ txn.reference }}</a>
+                        {% else %}
+                            {{ txn.reference }}
+                        {% endif %}
+                    </td>
+                    <td class="fw-bold {% if txn.type == 'credit' %}text-success{% else %}text-danger{% endif %}">{{ txn.payment_reference }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center text-muted">No wallet transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

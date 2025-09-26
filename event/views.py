@@ -1,15 +1,7 @@
-from .models import Equipment
-from .forms import EquipmentForm
-
 from django.urls import reverse
-
 from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth import update_session_auth_hash
-
-
 from django.contrib import messages
-
-
 from django.shortcuts import render, get_object_or_404, redirect
 from django.db.models import Q
 from django.contrib.auth import authenticate, login, logout
@@ -20,9 +12,9 @@ from datetime import date
 import datetime
 import json
 from user.forms import UserForm, UpdateUserForm, ProfileForm, UpdateProfileForm, AddMoneyForm, WithdrawMoneyForm
-from .models import Event, Ticket, FoodItem
-from user.models import  Profile
-from .forms import EventForm, BuyTicketForm, FoodItemForm
+from .models import Event, Ticket, FoodItem,Equipment
+from user.models import  Profile,WalletTransaction
+from .forms import EventForm, BuyTicketForm, FoodItemForm,EquipmentForm
 
 
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg', 'webp']
@@ -80,6 +72,7 @@ def update_food_item(request, pk):
     else:
         form = FoodItemForm(instance=food_item)
     return render(request, 'event/food_item_form.html', {'form': form})
+
 def equipment_list(request):
     if not request.user.is_superuser:
         return redirect('user:login_user')
@@ -217,13 +210,36 @@ def buy_ticket(request, pk):
                 owner_profile.wallet_balance += event.fare
                 profile.save()
                 owner_profile.save()
-                tickets = Ticket.objects.filter(attendee=request.user)
-                return redirect('user:profile')
+                amount = event.fare
+
+                # Debit from user
+                WalletTransaction.objects.create(
+                    user=user,
+                    amount=amount,
+                    type=WalletTransaction.Type.DEBIT,
+                    purpose=WalletTransaction.Purpose.TICKET_BOOKING,
+                    reference=f"Ticket booking for event: '{event.name}', (Manager: {event.manager.username})",
+                    event=event
+                )
+                # Credit to manager
+                WalletTransaction.objects.create(
+                    user=event.manager,
+                    amount=amount,
+                    type=WalletTransaction.Type.CREDIT,
+                    purpose=WalletTransaction.Purpose.CREDITED_ON_BOOKING,
+                    reference=f"Money credited for event: '{event.name}', (Booked by: {user.username})",
+                    event=event
+                )             
+                return redirect(reverse('event:detail', kwargs={'pk': event.pk}))
             context = {'profile': profile, 'form': form, 'event': event, 'error_message': 'Invalid Pin!'}
             return render(request, 'event/buy_ticket.html', context)
     else:
         form = BuyTicketForm()
     return render(request, 'event/buy_ticket.html', {'profile': profile, 'form': form, 'event': event})
+
+def transaction_history(request):
+    transactions = Transaction.objects.filter(user=request.user).order_by("-created_at")
+    return render(request, "event/transaction_history.html", {"transactions": transactions})
 
 
 def invite_users(request, pk):

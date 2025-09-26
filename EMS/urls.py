@@ -16,7 +16,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("event/", include(("event.urls", "event"), namespace="event")),
     path("user/", include(("user.urls", "user"), namespace="user")),
-    path("", include(("event.urls", "event"), namespace="event-root")),
+    path("", include(("event.urls", "event-root"), namespace="event-root")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

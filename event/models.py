@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.dispatch import receiver
+from django.utils import timezone
+
 
 class Equipment(models.Model):
     name = models.CharField(max_length=100, unique=True)
@@ -38,6 +40,7 @@ class Event(models.Model):
     def __str__(self):
         return f"{self.name}, {self.manager.username}"
 
+
 class Ticket(models.Model):
     attendee = models.ForeignKey(User, on_delete=models.CASCADE)
     event = models.ForeignKey(Event, on_delete=models.CASCADE)
@@ -45,6 +48,3 @@ class Ticket(models.Model):
 
     def __str__(self):
         return self.attendee.username
-
-
-
