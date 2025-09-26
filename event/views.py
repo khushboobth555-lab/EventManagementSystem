@@ -16,11 +16,11 @@ from django.http import HttpResponse
 from datetime import date
 import datetime
 import json
-
-from .models import Event, Ticket
-from user.models import  Profile
-from .forms import EventForm, BuyTicketForm
 from user.forms import UserForm, UpdateUserForm, ProfileForm, UpdateProfileForm, AddMoneyForm, WithdrawMoneyForm
+from .models import Event, Ticket, FoodItem
+from user.models import  Profile
+from .forms import EventForm, BuyTicketForm, FoodItemForm
+
 
 IMAGE_FILE_TYPES = ['png', 'jpg', 'jpeg', 'webp']
 
@@ -44,6 +44,39 @@ def home(request):
         'query': query,
     })
 
+def food_list(request):
+    if not request.user.is_superuser:
+        return redirect('user:login_user')
+    foods = FoodItem.objects.all()
+    return render(request, 'event/food_list.html', {'foods': foods})
+
+def add_food_item(request):
+    if not request.user.is_superuser:
+        return redirect('user:login_user')
+    if request.method == 'POST':
+        form = FoodItemForm(request.POST, request.FILES)
+        if form.is_valid():
+            food_item = form.save(commit=False)
+            food_item.save()
+            messages.success(request, 'Food item added successfully!')
+            return redirect('event:food_list')
+    else:
+        form = FoodItemForm()
+    return render(request, 'event/food_item_form.html', {'form': form})
+
+def update_food_item(request, pk):
+    if not request.user.is_superuser:
+        return redirect('user:login_user')
+    food_item = get_object_or_404(FoodItem, pk=pk)
+    if request.method == 'POST':
+        form = FoodItemForm(request.POST, request.FILES, instance=food_item)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Food item updated successfully!')
+            return redirect('event:food_list')
+    else:
+        form = FoodItemForm(instance=food_item)
+    return render(request, 'event/food_item_form.html', {'form': form})
 
 def detail(request, pk):
     if not request.user.is_authenticated:
@@ -71,6 +104,7 @@ def add_event(request):
                         'error_message': 'Image file must be PNG, JPG, WebP or JPEG',
                     })
                 event.save()
+                form.save_m2m()  # Save ManyToMany relationships (foods)
                 return redirect(reverse('event:detail', kwargs={'pk': event.pk}))
         return render(request, 'event/event_form.html', {'form': form})
     else:

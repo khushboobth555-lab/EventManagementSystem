@@ -8,8 +8,11 @@ app_name = 'event'
 
 urlpatterns = [
     path('', views.home, name='home'),
+    path('food_list/', views.food_list, name='food_list'),
     path('add_event/', views.add_event, name='add_event'),
     re_path(r'^detail/(?P<pk>[0-9]+)/$', views.detail, name='detail'),
+    re_path('add_food_item/', views.add_food_item, name='add_food_item'),
+    re_path(r'^update_food_item/(?P<pk>[0-9]+)/$', views.update_food_item, name='update_food_item'),
     re_path(r'^update/(?P<pk>[0-9]+)/$', views.EventUpdate.as_view(), name='update_event'),  
     path('past_events/', views.get_past_events, name='past_events'), 
     re_path(r'^buy_ticket/(?P<pk>[0-9]+)/$', views.buy_ticket, name='buy_ticket'),

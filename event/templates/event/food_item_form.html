@@ -1,0 +1,21 @@
+{% extends 'event/base.html' %}
+{% block title %}
+{{ form.instance.pk|yesno:'Update Food Item,Add Food Item' }}{% endblock %}
+{% block body %}
+<div class="container" style="max-width:600px; margin-top:40px;">
+    <div class="panel panel-default">
+    <div class="form-heading">{{ form.instance.pk|yesno:'Update Food Item,Add Food Item' }}{% if event %} for {{ event.name }}{% endif %}</div>
+        <div class="panel-body">
+            <form method="post" enctype="multipart/form-data" class="form-horizontal">
+                {% csrf_token %}
+                {% include "event/form_template.html" %}
+                <div class="form-group text-center">
+                    <div class="col-sm-12">
+                        <button type="submit" class="btn btn-success">{{ form.instance.pk|yesno:'Update Food Item,Add Food Item' }}</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

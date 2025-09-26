@@ -44,14 +44,7 @@
                         <a href="{% url 'event:home' %}">
                             <span class="glyphicon glyphicon-glass" aria-hidden="true"></span> Events
                         </a>
-                    </li>
-                   {% if request.user.is_superuser %}
-                    <li>
-                        <a href="{% url 'event:add_event' %}">
-                            <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add Event
-                        </a>
-                    </li>
-                    {% endif %}
+                    </li>                 
 
                     <!-- Wallet Dropdown -->
                     <li class="dropdown {% block wallet_active %}{% endblock %}">
@@ -95,9 +88,23 @@
                 <ul class="nav navbar-nav navbar-right">  
                      <li class="{% block profile_active %}{% endblock %}">
                         <a href="{% url 'user:profile' %}" id="id_profile">
-                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> Profile
+                            <span class="glyphicon glyphicon-user" aria-hidden="true"></span> {{request.user.username}}
                         </a>
-                    </li>                  
+                    </li>
+                    {% if request.user.is_superuser %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" id="id_event_manager" role="button" aria-haspopup="true" aria-expanded="false">
+                            <span class="label label-primary" style="margin-left:6px; font-size:12px; vertical-align:middle;">Event Manager</span>
+                            <span class="caret"></span>
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="id_event_manager">
+                            <li><a href="{% url 'event:add_event' %}"><span class="glyphicon glyphicon-plus"></span> Add Event</a></li>
+                            <li><a href="{% url 'event:add_food_item' %}"><span class="glyphicon glyphicon-cutlery"></span> Add Food Item</a></li>
+                            <li><a href="{% url 'event:food_list' %}"><span class="glyphicon glyphicon-list"></span> View Food Items</a></li>
+                        </ul>
+                    </li>
+                    {% endif %}
+                                     
                     <li>
                         <a href="{% url 'user:logout_user' %}">
                             <span class="glyphicon glyphicon-off" aria-hidden="true"></span> Logout

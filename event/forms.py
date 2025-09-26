@@ -1,9 +1,9 @@
-
 from django import forms
 from django.contrib.auth.models import User
 from .models import Event, Ticket
 from user.models import  Profile
 from datetime import date
+from .models import Event, Ticket, FoodItem
 
 
 class EventForm(forms.ModelForm):
@@ -14,105 +14,35 @@ class EventForm(forms.ModelForm):
     time = forms.TimeField(widget=forms.TimeInput(attrs={'type': 'time'}))
     fare = forms.CharField(widget=forms.NumberInput(attrs={'inputmode': 'numeric' }), required=True )
     image = forms.ImageField(required=True)
+    foods = forms.ModelMultipleChoiceField(
+        queryset=FoodItem.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label='Available Foods'
+    )
 
     class Meta:
         model = Event
-        fields = ['name', 'location', 'date', 'time', 'fare', 'image']
+        fields = ['name', 'location', 'date', 'time', 'fare', 'image','foods']
 
-
-
-class UserForm(forms.ModelForm):
-    username = forms.CharField(required=True)
-    email = forms.EmailField(required=True)
-    password = forms.CharField(widget=forms.PasswordInput, required=True)
-    first_name = forms.CharField(required=True)
-    last_name = forms.CharField(required=True)
+class FoodItemForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'maxlength': '100'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 2}), required=True)
+    price = forms.DecimalField(required=True, max_digits=7, decimal_places=2)
+    image = forms.ImageField(required=True)
 
     class Meta:
-        model = User
-        fields = ['username', 'email', 'password', 'first_name', 'last_name']
+        model = FoodItem
+        fields = ['name', 'description', 'price', 'image']
 
-
-class ProfileForm(forms.ModelForm):
-    wallet_pin = forms.CharField(
-        widget=forms.PasswordInput(attrs={'inputmode': 'numeric', 'maxlength': '4', 'minlength': '4'}),
-        required=True,
-        min_length=4,
-        max_length=4,
-        label='Wallet PIN',
-        help_text='Enter a 4-digit number.'
-    )
-    bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
-    location = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
-    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
-    age = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}), required=False)
-
-    def clean_wallet_pin(self):
-        pin = self.cleaned_data.get('wallet_pin')
-        if not pin.isdigit() or len(pin) != 4:
-            raise forms.ValidationError('Wallet PIN must be a 4-digit number.')
-        return pin
-
-    def clean(self):
-        cleaned_data = super().clean()
-        birth_date = cleaned_data.get('birth_date')
-        if birth_date:
-            today = date.today()
-            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
-            cleaned_data['age'] = age
-            if age < 18:
-                self.add_error('birth_date', 'You must be at least 18 years old to register.')
-        return cleaned_data
-
-    class Meta:
-        model = Profile
-        fields = [ 'birth_date', 'age', 'wallet_pin', 'image', 'bio', 'location']
-
-
-
-# Form for updating user profile (excluding username)
-class UpdateUserForm(forms.ModelForm):
-    email = forms.EmailField(required=True)
-    first_name = forms.CharField(required=True)
-    last_name = forms.CharField(required=True)
-
-    class Meta:
-        model = User
-        fields = [ 'email', 'first_name', 'last_name']
-
-# Form for updating Profile model
-class UpdateProfileForm(forms.ModelForm):
-    
-    bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
-    location = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
-    birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
-    age = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}), required=False)
-
-    def clean(self):
-        cleaned_data = super().clean()
-        birth_date = cleaned_data.get('birth_date')
-        if birth_date:
-            today = date.today()
-            age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
-            cleaned_data['age'] = age
-            if age < 18:
-                self.add_error('birth_date', 'You must be at least 18 years old to register.')
-        return cleaned_data
-
-    class Meta:
-        model = Profile
-        fields = [ 'birth_date', 'age', 'image', 'bio', 'location']
-
-
-
-class AddMoneyForm(forms.Form):
-    amount = forms.IntegerField(label='Amount to Add', min_value=0)
-    pin = forms.CharField(label='Enter PIN', widget=forms.PasswordInput)
-
-
-class WithdrawMoneyForm(forms.Form):
-    amount = forms.IntegerField(label='Amount to Withdraw', min_value=0)
-    pin = forms.CharField(label='Enter PIN', widget=forms.PasswordInput)
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if not image:
+            raise forms.ValidationError('Image is required.')
+        if hasattr(image, 'content_type'):
+            if image.content_type not in ['image/jpeg','image/jpg', 'image/png', 'image/webp']:
+                raise forms.ValidationError('Only JPEG, JPG, PNG, and WEBP images are allowed.')
+        return image
 
 
 class BuyTicketForm(forms.Form):

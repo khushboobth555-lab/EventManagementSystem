@@ -49,6 +49,24 @@
           <div class="event-detail-row"><strong>Fare:</strong> <span class="event-inr">&#8377;</span> {{ event.fare }}/-</div>
           <div class="event-detail-row"><strong>Manager Name:</strong> {{ event.manager.first_name }} {{ event.manager.last_name }}</div>
           <div class="event-detail-row"><strong>Manager Mobile:</strong> {{ event.manager.profile.mobile_number }} </div>
+            <hr>
+            <div class="event-detail-row"><strong>Food Items Available:</strong></div>
+            <div class="row">
+              {% for food in event.foods.all %}
+                <div class="col-xs-6 col-sm-4 col-md-3" style="margin-bottom:20px;">
+                  <div class="card food-card" style="border:1px solid #eee; border-radius:8px; padding:10px; text-align:center;">
+                    {% if food.image %}
+                      <img src="{{ food.image.url }}" alt="{{ food.name }}" style="max-width:100px; max-height:100px; margin-bottom:8px; border-radius:4px;">
+                    {% else %}
+                      <img src="{% static 'event/images/default_event.jpg' %}" alt="No Image" style="max-width:100px; max-height:100px; margin-bottom:8px; border-radius:4px;">
+                    {% endif %}
+                    <div><strong>{{ food.name }}</strong></div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="col-xs-12"><em>No food items available for this event.</em></div>
+              {% endfor %}
+            </div>
         </div>
       </div>
       <div class="panel panel-info event-panel-attendees">
