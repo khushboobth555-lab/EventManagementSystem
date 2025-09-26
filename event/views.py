@@ -1,3 +1,6 @@
+from .models import Equipment
+from .forms import EquipmentForm
+
 from django.urls import reverse
 
 from django.contrib.auth import update_session_auth_hash
@@ -77,6 +80,39 @@ def update_food_item(request, pk):
     else:
         form = FoodItemForm(instance=food_item)
     return render(request, 'event/food_item_form.html', {'form': form})
+def equipment_list(request):
+    if not request.user.is_superuser:
+        return redirect('user:login_user')
+    equipments = Equipment.objects.all()
+    return render(request, 'event/equipment_list.html', {'equipments': equipments})
+
+def add_equipment(request):
+    if not request.user.is_superuser:
+        return redirect('user:login_user')
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST, request.FILES)
+        if form.is_valid():
+            equipment = form.save(commit=False)
+            equipment.save()
+            messages.success(request, 'Equipment added successfully!')
+            return redirect('event:equipment_list')
+    else:
+        form = EquipmentForm()
+    return render(request, 'event/equipment_form.html', {'form': form})
+
+def update_equipment(request, pk):
+    if not request.user.is_superuser:
+        return redirect('user:login_user')
+    equipment = get_object_or_404(Equipment, pk=pk)
+    if request.method == 'POST':
+        form = EquipmentForm(request.POST, request.FILES, instance=equipment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Equipment updated successfully!')
+            return redirect('event:equipment_list')
+    else:
+        form = EquipmentForm(instance=equipment)
+    return render(request, 'event/equipment_form.html', {'form': form})
 
 def detail(request, pk):
     if not request.user.is_authenticated:

@@ -20,6 +20,9 @@ urlpatterns = [
     re_path(r'^send_invites/(?P<pk>[0-9]+)/$', views.send_invites, name='send_invites'),
     path('event_name_validate/', views.event_name_validate, name='event_name_validate'),
     path('event_date_validate/', views.event_date_validate, name='event_date_validate'),
+    path('equipment_list/', views.equipment_list, name='equipment_list'),
+    path('add_equipment/', views.add_equipment, name='add_equipment'),
+    path('update_equipment/<int:pk>/', views.update_equipment, name='update_equipment'),
 
 ]
 

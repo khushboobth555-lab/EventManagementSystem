@@ -1,9 +1,8 @@
 from django import forms
 from django.contrib.auth.models import User
-from .models import Event, Ticket
 from user.models import  Profile
 from datetime import date
-from .models import Event, Ticket, FoodItem
+from .models import Event, Ticket, FoodItem,Equipment
 
 
 class EventForm(forms.ModelForm):
@@ -20,10 +19,16 @@ class EventForm(forms.ModelForm):
         required=True,
         label='Available Foods'
     )
+    equipments = forms.ModelMultipleChoiceField(
+        queryset=Equipment.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=True,
+        label='Available Equipments'
+    )
 
     class Meta:
         model = Event
-        fields = ['name', 'location', 'date', 'time', 'fare', 'image','foods']
+        fields = ['name', 'location', 'date', 'time', 'fare', 'image','foods','equipments']
 
 class FoodItemForm(forms.ModelForm):
     name = forms.CharField(required=True, widget=forms.TextInput(attrs={'maxlength': '100'}))
@@ -44,6 +49,24 @@ class FoodItemForm(forms.ModelForm):
                 raise forms.ValidationError('Only JPEG, JPG, PNG, and WEBP images are allowed.')
         return image
 
+class EquipmentForm(forms.ModelForm):
+    name = forms.CharField(required=True, widget=forms.TextInput(attrs={'maxlength': '100'}))
+    description = forms.CharField(widget=forms.Textarea(attrs={'rows': 2}), required=True)
+    price = forms.DecimalField(required=True, max_digits=7, decimal_places=2)
+    image = forms.ImageField(required=True)
 
+    class Meta:
+        model = Equipment
+        fields = ['name', 'description', 'price', 'image']
+
+    def clean_image(self):
+        image = self.cleaned_data.get('image')
+        if not image:
+            raise forms.ValidationError('Image is required.')
+        if hasattr(image, 'content_type'):
+            if image.content_type not in ['image/jpeg','image/jpg', 'image/png', 'image/webp']:
+                raise forms.ValidationError('Only JPEG, JPG, PNG, and WEBP images are allowed.')
+        return image
+    
 class BuyTicketForm(forms.Form):
     pin = forms.CharField(label='Enter PIN', widget=forms.PasswordInput)

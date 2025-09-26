@@ -3,6 +3,15 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.dispatch import receiver
 
+class Equipment(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    description = models.TextField(blank=True, null=True)
+    price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+    image = models.ImageField(default='settings.MEDIA_ROOT/default_event.jpg')
+
+    def __str__(self):
+        return self.name
+    
 class FoodItem(models.Model):
     name = models.CharField(max_length=100, unique=True)
     description = models.TextField(blank=True, null=True)
@@ -21,6 +30,7 @@ class Event(models.Model):
     manager = models.ForeignKey(User, on_delete=models.CASCADE)
     fare = models.PositiveIntegerField(null=True)
     foods = models.ManyToManyField(FoodItem, related_name="events")
+    equipments = models.ManyToManyField(Equipment, related_name="events")
 
     def get_absolute_url(self):
         return reverse('event:detail', kwargs={'pk': self.pk})

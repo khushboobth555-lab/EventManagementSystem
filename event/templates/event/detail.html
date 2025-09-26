@@ -20,7 +20,8 @@
         <div class="card-body text-center" style="flex:1; display:flex; flex-direction:column; justify-content:flex-start;">
           <h2 class="card-title event-card-title">{{ event.name }}</h2>
           <p class="card-text event-card-location">{{ event.location }}</p>
-          <p class="card-text event-card-manager">Manager: <strong>{{ event.manager.first_name }} {{ event.manager.last_name }}</strong></p>
+          <p class="card-text event-card-manager">Manager Name: <strong>{{ event.manager.first_name }} {{ event.manager.last_name }}</strong></p>
+          <p class="card-text event-card-manager">Manager Mobile No. : <strong>{{ event.manager.profile.mobile_number }} </strong></p>
           <div class="info-bar event-info-bar">
             <span title="Date"><i class="glyphicon glyphicon-calendar"></i> {{ event.date }}</span>
             <span title="Time"><i class="glyphicon glyphicon-time"></i> {{ event.time }}</span>
@@ -42,29 +43,40 @@
     <div class="col-md-8">
       <div class="panel panel-info event-panel-details">
         <div class="panel-heading event-panel-heading">Event Details</div>
-        <div class="panel-body">
-          <div class="event-detail-row"><strong>Location:</strong> {{ event.location }}</div>
-          <div class="event-detail-row"><strong>Date:</strong> {{ event.date }}</div>
-          <div class="event-detail-row"><strong>Time:</strong> {{ event.time }}</div>
-          <div class="event-detail-row"><strong>Fare:</strong> <span class="event-inr">&#8377;</span> {{ event.fare }}/-</div>
-          <div class="event-detail-row"><strong>Manager Name:</strong> {{ event.manager.first_name }} {{ event.manager.last_name }}</div>
-          <div class="event-detail-row"><strong>Manager Mobile:</strong> {{ event.manager.profile.mobile_number }} </div>
-            <hr>
+        <div class="panel-body">          
             <div class="event-detail-row"><strong>Food Items Available:</strong></div>
             <div class="row">
               {% for food in event.foods.all %}
-                <div class="col-xs-6 col-sm-4 col-md-3" style="margin-bottom:20px;">
+                <div class="col-xs-6 col-sm-4 col-md-3">
                   <div class="card food-card" style="border:1px solid #eee; border-radius:8px; padding:10px; text-align:center;">
                     {% if food.image %}
-                      <img src="{{ food.image.url }}" alt="{{ food.name }}" style="max-width:100px; max-height:100px; margin-bottom:8px; border-radius:4px;">
+                      <img src="{{ food.image.url }}" alt="{{ food.name }}" style="max-width:100px; max-height:80px; margin-bottom:8px; border-radius:4px;">
                     {% else %}
-                      <img src="{% static 'event/images/default_event.jpg' %}" alt="No Image" style="max-width:100px; max-height:100px; margin-bottom:8px; border-radius:4px;">
+                      <img src="{% static 'event/images/default_event.jpg' %}" alt="No Image" style="max-width:100px; max-height:80px; margin-bottom:8px; border-radius:4px;">
                     {% endif %}
                     <div><strong>{{ food.name }}</strong></div>
                   </div>
                 </div>
               {% empty %}
                 <div class="col-xs-12"><em>No food items available for this event.</em></div>
+              {% endfor %}
+            </div>
+            <hr>
+            <div class="event-detail-row"><strong>Equipments Available:</strong></div>
+            <div class="row">
+              {% for equipment in event.equipments.all %}
+                <div class="col-xs-6 col-sm-4 col-md-3">
+                  <div class="card equipment-card" style="border:1px solid #eee; border-radius:8px; padding:10px; text-align:center;">
+                    {% if equipment.image %}
+                      <img src="{{ equipment.image.url }}" alt="{{ equipment.name }}" style="max-width:100px; max-height:100px; margin-bottom:8px; border-radius:4px;">
+                    {% else %}
+                      <img src="{% static 'event/images/default_event.jpg' %}" alt="No Image" style="max-width:100px; max-height:100px; margin-bottom:8px; border-radius:4px;">
+                    {% endif %}
+                    <div><strong>{{ equipment.name }}</strong></div>
+                  </div>
+                </div>
+              {% empty %}
+                <div class="col-xs-12"><em>No equipment available for this event.</em></div>
               {% endfor %}
             </div>
         </div>

@@ -14,9 +14,9 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("event/", include("event.urls")),
-    path("user/", include("user.urls")),
-    path("", include("event.urls")),
+    path("event/", include(("event.urls", "event"), namespace="event")),
+    path("user/", include(("user.urls", "user"), namespace="user")),
+    path("", include(("event.urls", "event"), namespace="event-root")),
 ]
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
