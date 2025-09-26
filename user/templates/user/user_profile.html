@@ -40,9 +40,10 @@
         </div>
         <div style="font-size:1.2rem; font-weight:500; color:#222; margin-bottom:24px;">
           <div><strong>Bio:</strong> {{ profile.bio }}</div>
+          <div><strong>Mobile Number:</strong> {{ profile.mobile_number }}</div>
           <div><strong>Age:</strong> {{ profile.age }}</div>
           <div><strong>DoB:</strong> {{ profile.birth_date|date:'M. d, Y' }}</div>
-          <div><strong>Address:</strong> {{ profile.location }}</div>
+          <div><strong>Address:</strong> {{ profile.address }}</div>
           <div><strong>Wallet Balance:</strong> <span style="color:#28a745; font-weight:700;">{{ profile.wallet_balance }}</span></div>
         </div>
       </div>

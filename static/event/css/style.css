@@ -583,7 +583,7 @@ body {
 }
 
 /* Register form improvements */
-#id_profile-bio, #id_profile-location {
+#id_profile-bio, #id_profile-address {
     border-radius: 8px;
     border: 1px solid #ced4da;
     background: #fff;
@@ -593,7 +593,7 @@ body {
     box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     transition: border-color 0.2s;
 }
-#id_profile-bio:focus, #id_profile-location:focus {
+#id_profile-bio:focus, #id_profile-address:focus {
     border-color: #80bdff;
     outline: none;
     box-shadow: 0 0 0 2px rgba(0,123,255,0.15);

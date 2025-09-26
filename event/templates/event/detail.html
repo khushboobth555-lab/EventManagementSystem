@@ -47,7 +47,8 @@
           <div class="event-detail-row"><strong>Date:</strong> {{ event.date }}</div>
           <div class="event-detail-row"><strong>Time:</strong> {{ event.time }}</div>
           <div class="event-detail-row"><strong>Fare:</strong> <span class="event-inr">&#8377;</span> {{ event.fare }}/-</div>
-          <div class="event-detail-row"><strong>Manager:</strong> {{ event.manager.first_name }} {{ event.manager.last_name }}</div>
+          <div class="event-detail-row"><strong>Manager Name:</strong> {{ event.manager.first_name }} {{ event.manager.last_name }}</div>
+          <div class="event-detail-row"><strong>Manager Mobile:</strong> {{ event.manager.profile.mobile_number }} </div>
         </div>
       </div>
       <div class="panel panel-info event-panel-attendees">
