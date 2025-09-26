@@ -9,10 +9,9 @@ class UserForm(forms.ModelForm):
 	password = forms.CharField(widget=forms.PasswordInput, required=True)
 	first_name = forms.CharField(required=True)
 	last_name = forms.CharField(required=True)
-
 	class Meta:
 		model = User
-		fields = ['username', 'email', 'password', 'first_name', 'last_name']
+		fields = ['username', 'email', 'first_name', 'last_name', 'password']
 
 class ProfileForm(forms.ModelForm):
 	wallet_pin = forms.CharField(
@@ -24,7 +23,14 @@ class ProfileForm(forms.ModelForm):
 		help_text='Enter a 4-digit number.'
 	)
 	bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
-	location = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
+	mobile_number = forms.CharField(
+		required=True,
+		max_length=10,
+		min_length=10,
+		label='Mobile Number',
+		help_text='Enter a 10-digit mobile number.'
+	)
+	address = forms.CharField(widget=forms.Textarea(attrs={'rows': 1}), required=False)
 	birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
 	age = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}), required=False)
 
@@ -47,20 +53,32 @@ class ProfileForm(forms.ModelForm):
 
 	class Meta:
 		model = Profile
-		fields = [ 'birth_date', 'age', 'wallet_pin', 'image', 'bio', 'location']
+		fields = [ 'mobile_number', 'birth_date', 'age', 'wallet_pin', 'image', 'bio', 'address']
+
+	def clean_mobile_number(self):
+		mobile = self.cleaned_data.get('mobile_number')
+		if not mobile.isdigit() or len(mobile) != 10:
+			raise forms.ValidationError('Mobile number must be exactly 10 digits.')
+		return mobile
 
 class UpdateUserForm(forms.ModelForm):
 	email = forms.EmailField(required=True)
 	first_name = forms.CharField(required=True)
 	last_name = forms.CharField(required=True)
-
 	class Meta:
 		model = User
 		fields = [ 'email', 'first_name', 'last_name']
 
 class UpdateProfileForm(forms.ModelForm):
 	bio = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
-	location = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
+	mobile_number = forms.CharField(
+		required=True,
+		max_length=10,
+		min_length=10,
+		label='Mobile Number',
+		help_text='Enter a 10-digit mobile number.'
+	)
+	address = forms.CharField(widget=forms.Textarea(attrs={'rows': 3}), required=False)
 	birth_date = forms.DateField(widget=forms.DateInput(attrs={'type': 'date'}), required=True)
 	age = forms.IntegerField(widget=forms.NumberInput(attrs={'readonly': 'readonly'}), required=False)
 
@@ -77,7 +95,13 @@ class UpdateProfileForm(forms.ModelForm):
 
 	class Meta:
 		model = Profile
-		fields = [ 'birth_date', 'age', 'image', 'bio', 'location']
+		fields = [ 'mobile_number', 'birth_date', 'age', 'image', 'bio', 'address']
+
+	def clean_mobile_number(self):
+		mobile = self.cleaned_data.get('mobile_number')
+		if not mobile.isdigit() or len(mobile) != 10:
+			raise forms.ValidationError('Mobile number must be exactly 10 digits.')
+		return mobile
 
 class AddMoneyForm(forms.Form):
 	amount = forms.IntegerField(label='Amount to Add', min_value=0)
