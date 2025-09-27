@@ -47,4 +47,4 @@ class Ticket(models.Model):
     flag = models.BooleanField(null=False)
 
     def __str__(self):
-        return self.attendee.username
+        return  f"{self.attendee.username} - {self.event.name}"
